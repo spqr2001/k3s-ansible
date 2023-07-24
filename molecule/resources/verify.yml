@@ -2,4 +2,4 @@
 - name: Verify
   hosts: all
   roles:
-    - verify_from_outside
+    - verify/from_outside

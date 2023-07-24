@@ -1,14 +1,13 @@
 ---
-- name: Prepare Proxmox cluster
-  hosts: proxmox
+
+- hosts: proxmox
   gather_facts: true
   become: yes
   roles:
     - role: proxmox_lxc
       when: proxmox_lxc_configure
 
-- name: Prepare k3s nodes
-  hosts: k3s_cluster
+- hosts: k3s_cluster
   gather_facts: yes
   roles:
     - role: lxc
@@ -21,20 +20,17 @@
     - role: raspberrypi
       become: true
 
-- name: Setup k3s servers
-  hosts: master
+- hosts: master
   roles:
-    - role: k3s_server
+    - role: k3s/master
       become: true
 
-- name: Setup k3s agents
-  hosts: node
+- hosts: node
   roles:
-    - role: k3s_agent
+    - role: k3s/node
       become: true
 
-- name: Configure k3s cluster
-  hosts: master
+- hosts: master
   roles:
-    - role: k3s_server_post
+    - role: k3s/post
       become: true
