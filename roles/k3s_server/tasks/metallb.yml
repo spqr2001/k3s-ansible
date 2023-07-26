@@ -8,14 +8,28 @@
     mode: 0644
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
 
-- name: "Download to first master: manifest for metallb-{{ metal_lb_type }}"
+- name: "Download to localhost: manifest for metallb-{{ metal_lb_type }}"
   ansible.builtin.get_url:
     url: "https://raw.githubusercontent.com/metallb/metallb/{{ metal_lb_controller_tag_version }}/config/manifests/metallb-{{ metal_lb_type }}.yaml"  # noqa yaml[line-length]
-    dest: "/var/lib/rancher/k3s/server/manifests/metallb-crds.yaml"
+    dest: "/tmp/metallb-crds.yaml"
+    #dest: "/var/lib/rancher/k3s/server/manifests/metallb-crds.yaml"
     owner: root
     group: root
     mode: 0644
+  #when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+  delegate_to: 127.0.0.1 
+  run_once: true
+
+
+- name: "Copy to first master: manifest for metallb-{{ metal_lb_type }}" 
+  ansible.builtin.copy:
+    src: "/tmp/metallb-crds.yaml"
+    dest: "/var/lib/rancher/k3s/server/manifests/metallb-crds.yaml" 
+    owner: root
+    group: root
+    mode: '0644'
   when: ansible_hostname == hostvars[groups[group_name_master | default('master')][0]]['ansible_hostname']
+
 
 - name: Set image versions in manifest for metallb-{{ metal_lb_type }}
   ansible.builtin.replace:
