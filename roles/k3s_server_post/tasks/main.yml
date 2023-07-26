@@ -6,3 +6,13 @@
   file:
     path: /tmp/k3s
     state: absent
+
+- name: get the username running the deploy
+  become: false
+  local_action: command whoami
+  register: username_on_the_host
+
+- name: Store file into /tmp/fetched/host.example.com/tmp/somefile
+  ansible.builtin.fetch:
+    src: /home/{{ansible_user}}.kube/config  
+    dest: /home/{{username_on_the_host}}/.kube/config
